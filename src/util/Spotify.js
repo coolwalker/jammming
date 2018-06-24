@@ -50,87 +50,36 @@ const Spotify = {
         
     },
 
-    savePlaylist(playlistname, tracks){
-
-        let userId, playlistId;
-
-        if(playlistname === undefined || tracks === undefined) {
-            return;
+    savePlaylist(name, trackUris) {
+        if (!name || !trackUris.length) {
+          return;
         }
-        //fetching token to use in subsequent calls
-        const token = this.getSpotifyToken();
-        let header = {
-            'Authorization': `Bearer ${token}`,
-            'Content-type': 'application/json'
-        };
-        
-        //Fetching current logged in user's id
-         fetch('https://cors-anywhere.herokuapp.com/https://api.spotify.com/v1/me', {
-             headers: {
-            Authorization: `Bearer ${token}`
-        }
-                }).then(response => {
-                    if(response.ok){
-                    return response.json()
-                }
-            }).then(jsonResponse => {
-                 userId = jsonResponse.id;
-            }, error => {
-                throw(new Error);
-            });
-             
-       
 
-        const data = JSON.stringify({
-                name: playlistname,
-                public: false
+        const accessToken = this.getSpotifyToken();
 
-        });
-       
-      
+        const headers = { Authorization: `Bearer ${accessToken}` };
+        let userId;
 
-        //Creating an empty playlist in user's account with the playlist name parameter
-         fetch(`https://cors-anywhere.herokuapp.com/https://api.spotify.com/v1/users/${userId}/playlists`,
-        {
-            method:'POST',
-            headers: header,
-            body: data
-
-        }).then(response => {
-            return response.json();
-        }).then(jsonResponse => {
-                playlistId =  jsonResponse.id;
-        });
-
-        console.log(playlistId);
-
-        const playlistTracks = JSON.stringify(
-            {
-                uris: tracks
-            }
-        );
-
-        /*
-
-        //Finally, adding the array of tracks to the newly created spotify playlist
-         fetch(`https://cors-anywhere.herokuapp.com/https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`,
-        {
+        return fetch('https://api.spotify.com/v1/me', {headers: headers}
+        ).then(response => response.json()
+        ).then(jsonResponse => {
+          userId = jsonResponse.id;
+          return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+            headers: headers,
             method: 'POST',
-            headers:header,
-            body: playlistTracks   
-        }).then(response => {
-            return response.json();
-        }).then(jsonResponse => {
-            if(jsonResponse.playlist) {
-                return jsonResponse.id;
-            }
+            body: JSON.stringify({name: name})
+          }).then(response => response.json()
+          ).then(jsonResponse => {
+            const playlistId = jsonResponse.id;
+            return fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`, {
+              headers: headers,
+              method: 'POST',
+              body: JSON.stringify({uris: trackUris})
+            });
+          });
         });
-
-        
-       */
-    }
-
-};
+      }
+}
 
 export default Spotify;
 
