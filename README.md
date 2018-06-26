@@ -3,4 +3,6 @@ To run this project, you will need to register an app with Spotify and add the c
 If running locally, change the redirect url in Spotify.js to localhost:3000 or whatever port you're running on. This also needs to reflect in your app settings in Spotify dashboard.
 
 
-For details on creating react apps, refer to this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
+For details on creating react apps, refer to the guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
+
+For a working url of this project, check [this](http://spotifycurate.surge.sh).
